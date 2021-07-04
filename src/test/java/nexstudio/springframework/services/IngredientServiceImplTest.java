@@ -127,13 +127,13 @@ public class IngredientServiceImplTest {
 
         when(recipeReactiveRepository.findById(anyString())).thenReturn(Mono.just(recipe));
         when(recipeReactiveRepository.save(any())).thenReturn(Mono.just(new Recipe()));
-        
-        ingredientService.deleteById("1", "3");
+
         //when
+        ingredientService.deleteById("1", "3");
         Mono.empty();
 
         //then
-        assertEquals(recipe.getIngredients().size(), 1);
+        assertEquals(1, recipe.getIngredients().size());
         verify(recipeReactiveRepository, times(1)).findById(anyString());
         verify(recipeReactiveRepository, times(1)).save(any(Recipe.class));
     }
