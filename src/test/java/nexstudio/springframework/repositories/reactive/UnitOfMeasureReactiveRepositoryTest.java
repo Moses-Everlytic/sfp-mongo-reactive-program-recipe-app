@@ -10,20 +10,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import nexstudio.springframework.model.UnitOfMeasure;    
+import nexstudio.springframework.model.UnitOfMeasure;
 
 @RunWith(SpringRunner.class)
 @DataMongoTest
 public class UnitOfMeasureReactiveRepositoryTest {
 
     @Autowired
-    private UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository;
+    UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository;
 
     @Before
-    public void setup(){
-        unitOfMeasureReactiveRepository.deleteAll();
+    public void setup() throws Exception {
+        unitOfMeasureReactiveRepository.deleteAll().block();
     }
-        
+
     @Test
     public void shouldSaveUnitOfMeasure() throws Exception {
         UnitOfMeasure uom = new UnitOfMeasure();
@@ -37,15 +37,14 @@ public class UnitOfMeasureReactiveRepositoryTest {
     }
 
     @Test
-	public void shouldFindByDescription() throws Exception {
-		UnitOfMeasure uom = new UnitOfMeasure();
-		uom.setDescription("Each");
+    public void shouldFindByDescription() throws Exception {
+        UnitOfMeasure uom = new UnitOfMeasure();
+        uom.setDescription("Each");
 
-		unitOfMeasureReactiveRepository.save(uom).block();
+        unitOfMeasureReactiveRepository.save(uom).block();
 
-		UnitOfMeasure fetchUOM = unitOfMeasureReactiveRepository.findByDescription("Each").block();
+        UnitOfMeasure fetchUOM = unitOfMeasureReactiveRepository.findByDescription("Each").block();
 
-		assertNotNull(fetchUOM.getId());
-	}
+        assertEquals("Each", fetchUOM.getDescription());
+    }
 }
-    
