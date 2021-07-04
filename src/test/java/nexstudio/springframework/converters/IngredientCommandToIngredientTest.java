@@ -11,8 +11,6 @@ import org.junit.Test;
 
 import nexstudio.springframework.commands.IngredientCommand;
 import nexstudio.springframework.commands.UnitOfMeasureCommand;
-import nexstudio.springframework.converters.IngredientCommandToIngredient;
-import nexstudio.springframework.converters.UnitOfMeasureCommandToUnitOfMeasure;
 import nexstudio.springframework.model.Ingredient;
 import nexstudio.springframework.model.Recipe;
 

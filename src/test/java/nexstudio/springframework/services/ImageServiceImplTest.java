@@ -1,5 +1,13 @@
 package nexstudio.springframework.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -10,13 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import nexstudio.springframework.model.Recipe;
 import nexstudio.springframework.repositories.RecipeRepository;
-import nexstudio.springframework.services.ImageService;
-import nexstudio.springframework.services.ImageServiceImpl;
-
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
 
 
 public class ImageServiceImplTest {

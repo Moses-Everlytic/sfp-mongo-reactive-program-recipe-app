@@ -1,18 +1,18 @@
 package nexstudio.springframework.converters;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
+import java.math.BigDecimal;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import nexstudio.springframework.commands.IngredientCommand;
-import nexstudio.springframework.converters.IngredientToIngredientCommand;
-import nexstudio.springframework.converters.UnitOfMeasureToUnitOfMeasureCommand;
 import nexstudio.springframework.model.Ingredient;
 import nexstudio.springframework.model.Recipe;
 import nexstudio.springframework.model.UnitOfMeasure;
-
-import java.math.BigDecimal;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by jt on 6/21/17.

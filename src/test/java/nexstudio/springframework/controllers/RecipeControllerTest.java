@@ -20,8 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import nexstudio.springframework.commands.RecipeCommand;
-import nexstudio.springframework.controllers.ControllerExceptionHandler;
-import nexstudio.springframework.controllers.RecipeController;
 import nexstudio.springframework.exceptions.NotFoundException;
 import nexstudio.springframework.model.Recipe;
 import nexstudio.springframework.services.RecipeService;

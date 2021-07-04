@@ -1,24 +1,25 @@
 package nexstudio.springframework.bootstrap;
 
-import lombok.extern.slf4j.Slf4j;
-import nexstudio.springframework.model.*;
-import nexstudio.springframework.repositories.CategoryRepository;
-import nexstudio.springframework.repositories.RecipeRepository;
-import nexstudio.springframework.repositories.UnitOfMeasureRepository;
-import nexstudio.springframework.repositories.reactive.CategoryReactiveRepository;
-import nexstudio.springframework.repositories.reactive.RecipeReactiveRepository;
-import nexstudio.springframework.repositories.reactive.UnitOfMeasureReactiveRepository;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
+import nexstudio.springframework.model.Category;
+import nexstudio.springframework.model.Difficulty;
+import nexstudio.springframework.model.Ingredient;
+import nexstudio.springframework.model.Notes;
+import nexstudio.springframework.model.Recipe;
+import nexstudio.springframework.model.UnitOfMeasure;
+import nexstudio.springframework.repositories.CategoryRepository;
+import nexstudio.springframework.repositories.RecipeRepository;
+import nexstudio.springframework.repositories.UnitOfMeasureRepository;
 
 /**
  * Created by jt on 6/13/17.

@@ -1,6 +1,19 @@
 package nexstudio.springframework.services;
 
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -12,15 +25,6 @@ import nexstudio.springframework.converters.RecipeToRecipeCommand;
 import nexstudio.springframework.exceptions.NotFoundException;
 import nexstudio.springframework.model.Recipe;
 import nexstudio.springframework.repositories.RecipeRepository;
-import nexstudio.springframework.services.RecipeServiceImpl;
-
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
 
 /**
  * Created by jt on 6/17/17.

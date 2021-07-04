@@ -13,9 +13,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import nexstudio.springframework.bootstrap.RecipeBootstrap;
 import nexstudio.springframework.model.UnitOfMeasure;
-import nexstudio.springframework.repositories.CategoryRepository;
-import nexstudio.springframework.repositories.RecipeRepository;
-import nexstudio.springframework.repositories.UnitOfMeasureRepository;
 
 /**
  * Created by jt on 6/17/17.

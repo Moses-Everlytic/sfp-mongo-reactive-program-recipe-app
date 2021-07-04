@@ -1,5 +1,9 @@
 package nexstudio.springframework.converters;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -7,15 +11,8 @@ import nexstudio.springframework.commands.CategoryCommand;
 import nexstudio.springframework.commands.IngredientCommand;
 import nexstudio.springframework.commands.NotesCommand;
 import nexstudio.springframework.commands.RecipeCommand;
-import nexstudio.springframework.converters.CategoryCommandToCategory;
-import nexstudio.springframework.converters.IngredientCommandToIngredient;
-import nexstudio.springframework.converters.NotesCommandToNotes;
-import nexstudio.springframework.converters.RecipeCommandToRecipe;
-import nexstudio.springframework.converters.UnitOfMeasureCommandToUnitOfMeasure;
 import nexstudio.springframework.model.Difficulty;
 import nexstudio.springframework.model.Recipe;
-
-import static org.junit.Assert.*;
 
 public class RecipeCommandToRecipeTest {
     public static final String RECIPE_ID = "1";

@@ -1,13 +1,14 @@
 package nexstudio.springframework.converters;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import nexstudio.springframework.commands.UnitOfMeasureCommand;
-import nexstudio.springframework.converters.UnitOfMeasureCommandToUnitOfMeasure;
 import nexstudio.springframework.model.UnitOfMeasure;
-
-import static org.junit.Assert.*;
 
 public class UnitOfMeasureCommandToUnitOfMeasureTest {
 

@@ -1,13 +1,14 @@
 package nexstudio.springframework.converters;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import nexstudio.springframework.commands.CategoryCommand;
-import nexstudio.springframework.converters.CategoryToCategoryCommand;
 import nexstudio.springframework.model.Category;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by jt on 6/21/17.
