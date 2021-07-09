@@ -1,25 +1,27 @@
 package nexstudio.springframework.controllers;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.ui.Model;
 
 import nexstudio.springframework.model.Recipe;
@@ -29,30 +31,41 @@ import reactor.core.publisher.Flux;
 /**
  * Created by jt on 6/17/17.
  */
+@RunWith(SpringRunner.class)
+@WebFluxTest(IndexController.class)
+@Import({ThymeleafAutoConfiguration.class})
 public class IndexControllerTest {
 
-    @Mock
+    @MockBean
     RecipeService recipeService;
 
-    @Mock
+    @Autowired
+    WebTestClient webTestClient;
+
+    @MockBean
     Model model;
 
+    @Autowired
     IndexController controller;
-
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-
-        controller = new IndexController(recipeService);
-    }
 
     @Test
     public void testMockMVC() throws Exception {
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        Recipe recipe = new Recipe();
+        recipe.setDescription("Life Lemons");
 
-        mockMvc.perform(get("/"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("index"));
+        when(recipeService.getRecipes()).thenReturn(Flux.just(recipe));
+
+        webTestClient.get().uri("/")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(String.class)
+                .consumeWith(response -> {
+                    String responseBody = Objects.requireNonNull(response.getResponseBody());
+
+                    assertTrue(responseBody.contains("Life Lemons"));
+                });
+
+        verify(recipeService, times(1)).getRecipes();
     }
 
     @Test
