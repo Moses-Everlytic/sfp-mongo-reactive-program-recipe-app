@@ -4,15 +4,16 @@ import javax.validation.Valid;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.support.WebExchangeBindException;
 
 import lombok.extern.slf4j.Slf4j;
 import nexstudio.springframework.commands.RecipeCommand;
 import nexstudio.springframework.services.RecipeService;
+import reactor.core.publisher.Mono;
 
 /**
  * Created by jt on 6/19/17.
@@ -50,20 +51,12 @@ public class RecipeController {
     }
 
     @PostMapping("recipe")
-    public String saveOrUpdate(@Valid @ModelAttribute("recipe") RecipeCommand command, BindingResult bindingResult){
-
-        if(bindingResult.hasErrors()){
-
-            bindingResult.getAllErrors().forEach(objectError -> {
-                log.debug(objectError.toString());
-            });
-
-            return RECIPE_RECIPEFORM_URL;
-        }
-
-        RecipeCommand savedCommand = recipeService.saveRecipeCommand(command).block();
-
-        return "redirect:/recipe/" + savedCommand.getId() + "/show";
+    public Mono<String> saveOrUpdate(@Valid @ModelAttribute("recipe") Mono<RecipeCommand> command){
+        return command
+                .flatMap(recipeService::saveRecipeCommand)
+                .map(recipe -> "redirect:/recipe/" + recipe.getId() + "/show")
+                .doOnError(thr -> log.error("Error saving recipe"))
+                .onErrorResume(WebExchangeBindException.class, thr -> Mono.just(RECIPE_RECIPEFORM_URL));
     }
 
     @GetMapping("recipe/{id}/delete")

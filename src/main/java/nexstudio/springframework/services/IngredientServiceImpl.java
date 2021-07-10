@@ -11,6 +11,7 @@ import nexstudio.springframework.converters.IngredientCommandToIngredient;
 import nexstudio.springframework.converters.IngredientToIngredientCommand;
 import nexstudio.springframework.model.Ingredient;
 import nexstudio.springframework.model.Recipe;
+import nexstudio.springframework.model.UnitOfMeasure;
 import nexstudio.springframework.repositories.reactive.RecipeReactiveRepository;
 import nexstudio.springframework.repositories.reactive.UnitOfMeasureReactiveRepository;
 import reactor.core.publisher.Mono;
@@ -51,112 +52,65 @@ public class IngredientServiceImpl implements IngredientService {
     @Override
     @Transactional
     public Mono<IngredientCommand> saveIngredientCommand(IngredientCommand command) {
-        Optional<Recipe> recipeOptional = recipeReactiveRepository.findById(command.getRecipeId()).blockOptional();
+        
+        Recipe recipe = recipeReactiveRepository.findById(command.getRecipeId())
+                .switchIfEmpty(Mono.error(new RuntimeException("Recipe not found: " + command.getRecipeId())))
+                .doOnError(thr -> log.error("error saving ingredient{}", command, thr))
+                .toProcessor().block();
 
-        if(!recipeOptional.isPresent()){
 
-            //todo toss error if not found!
-            log.error("Recipe not found for id: " + command.getRecipeId());
-            return Mono.just(new IngredientCommand());
+        Optional<Ingredient> ingredientOptional = recipe.getIngredients().stream()
+                .filter(ingredient -> ingredient.getId().equals(command.getId()))
+                .findAny();
+
+        if (ingredientOptional.isPresent()) {
+            Ingredient ingredientFound = ingredientOptional.get();
+
+            ingredientFound.setDescription(command.getDescription());
+            ingredientFound.setAmount(command.getAmount());
+            UnitOfMeasure unitOfMeasure = getUnitOfMeasure(command).toProcessor().block();
+            ingredientFound.setUom(unitOfMeasure);
         } else {
-            Recipe recipe = recipeOptional.get();
-
-            Optional<Ingredient> ingredientOptional = recipe
-                    .getIngredients()
-                    .stream()
-                    .filter(ingredient -> ingredient.getId().equals(command.getId()))
-                    .findFirst();
-
-            if(ingredientOptional.isPresent()){
-                Ingredient ingredientFound = ingredientOptional.get();
-                ingredientFound.setDescription(command.getDescription());
-                ingredientFound.setAmount(command.getAmount());
-                ingredientFound.setUom(unitOfMeasureReactiveRepository
-                        .findById(command.getUom().getId()).block()); //todo address this
-            } else {
-                //add new Ingredient
-                Ingredient ingredient = ingredientCommandToIngredient.convert(command);
-              //  ingredient.setRecipe(recipe);
-                recipe.addIngredient(ingredient);
-            }
-
-            Recipe savedRecipe = recipeReactiveRepository.save(recipe).block();
-
-            Optional<Ingredient> savedIngredientOptional = savedRecipe.getIngredients().stream()
-                    .filter(recipeIngredients -> recipeIngredients.getId().equals(command.getId()))
-                    .findFirst();
-
-            //check by description
-            if(!savedIngredientOptional.isPresent()){
-                //not totally safe... But best guess
-                savedIngredientOptional = savedRecipe.getIngredients().stream()
-                        .filter(recipeIngredients -> recipeIngredients.getDescription().equals(command.getDescription()))
-                        .filter(recipeIngredients -> recipeIngredients.getAmount().equals(command.getAmount()))
-                        .filter(recipeIngredients -> recipeIngredients.getUom().getId().equals(command.getUom().getId()))
-                        .findFirst();
-            }
-
-            //to do check for fail
-
-            //enhance with id value
-            IngredientCommand ingredientCommandSaved = ingredientToIngredientCommand.convert(savedIngredientOptional.get());
-            ingredientCommandSaved.setRecipeId(recipe.getId());
-            return Mono.just(ingredientCommandSaved);
+            recipe.addIngredient(ingredientCommandToIngredient.convert(command));
         }
 
+        Recipe savedRecipe = recipeReactiveRepository.save(recipe).toProcessor().block();
+
+        Ingredient savedIngredient = findIngredient(command, savedRecipe);
+
+        IngredientCommand savedCommand = ingredientToIngredientCommand.convert(savedIngredient);
+        savedCommand.setRecipeId(recipe.getId());
+        return Mono.just(savedCommand);
+    }
+
+    private Mono<UnitOfMeasure> getUnitOfMeasure(IngredientCommand command) {
+        String uomId = command.getUom().getId();
+        return unitOfMeasureReactiveRepository.findById(uomId);
+    }
+
+    private Ingredient findIngredient(IngredientCommand command, Recipe savedRecipe) {
+        return savedRecipe.getIngredients().stream()
+                .filter(ingredient -> ingredient.getId().equals(command.getId()))
+                .findAny()
+                .orElse(savedRecipe.getIngredients().stream()
+                .filter(ingredient -> ingredient.getDescription().equals(command.getDescription()))
+                .filter(ingredient -> ingredient.getAmount().equals(command.getAmount()))
+                .filter(ingredient -> ingredient.getUom().getId().equals(command.getUom().getId()))
+                .findFirst()
+                .orElse(null));
     }
 
     @Override
     public Mono<Void> deleteById(String recipeId, String idToDelete) {
-
-        // Recipe recipeReactive = recipeReactiveRepository.findById(recipeId).block();
-
-        // if(recipeReactive != null) { 
-        //     Optional<Ingredient> ingredientOptional = recipeReactive
-        //                 .getIngredients()
-        //                 .stream()
-        //                 .filter(ingredient -> ingredient.getId().equals(idToDelete))
-        //                 .findFirst();
-    
-        //     if(ingredientOptional.isPresent()){
-        //         log.debug("found Ingredient");
-        //         // Ingredient ingredientToDelete = ingredientOptional.get();
-        //         // ingredientToDelete.setRecipe(null);
-        //         recipeReactive.getIngredients().remove(ingredientOptional.get());
-
-        //         recipeRepository.save(recipeReactive);
-        //     }
-
-        // } else {
-        //     log.debug("Recipe Id Not found. Id:" + recipeId);
-        // }
-
         log.debug("Deleting ingredient: " + recipeId + ":" + idToDelete);
 
-        Optional<Recipe> recipeOptional = recipeReactiveRepository.findById(recipeId).blockOptional();
-
-        if(recipeOptional.isPresent()){
-            Recipe recipe = recipeOptional.get();
-            log.debug("found recipe");
-
-            Optional<Ingredient> ingredientOptional = recipe
-                    .getIngredients()
-                    .stream()
-                    .filter(ingredient -> ingredient.getId().equals(idToDelete))
-                    .findFirst();
-
-            if(ingredientOptional.isPresent()){
-                log.debug("found Ingredient");
-                // Ingredient ingredientToDelete = ingredientOptional.get();
-               // ingredientToDelete.setRecipe(null);
-                recipe.getIngredients().remove(ingredientOptional.get());
-                recipeReactiveRepository.save(recipe).block();
-            }
-        } else {
-            log.debug("Recipe Id Not found. Id:" + recipeId);
-        }
-
-        return Mono.empty();
-
+        return recipeReactiveRepository.findById(recipeId)
+                .map(recipe -> {
+                    recipe.getIngredients().removeIf(ingredient -> ingredient.getId().equals(idToDelete));
+                    return recipe;
+                })
+                .flatMap(recipeReactiveRepository::save)
+                .doOnError(error -> log.error("error deleting ingredient {} from recipe {}", idToDelete, recipeId, error))
+                .then();                  
     }
 }

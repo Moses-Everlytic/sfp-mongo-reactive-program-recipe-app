@@ -47,4 +47,11 @@ public class Recipe {
         this.ingredients.add(ingredient);
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "Recipe{" +
+                "id='" + id + '\'' +
+                '}';
+    }
 }
