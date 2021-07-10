@@ -14,7 +14,7 @@ import nexstudio.springframework.model.Recipe;
 import nexstudio.springframework.services.RecipeService;
 
 @Configuration
-public class webConfig {
+public class WebConfig {
 
     // @Bean
     // RouterFunction<?> routes(RecipeService recipeService) {
@@ -27,7 +27,7 @@ public class webConfig {
     // }
 
     @Bean
-    RouterFunction<ServerResponse> routes(RecipeService recipeService) {
+    public RouterFunction<ServerResponse> routes(RecipeService recipeService) {
         return 
             route(GET("api/recipes"), 
                 req -> ok()
